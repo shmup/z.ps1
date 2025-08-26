@@ -1,0 +1,146 @@
+Z(1)                             User Commands                            Z(1)
+
+
+
+NAME
+       z - jump around
+
+SYNOPSIS
+       z [-cehlrtx] [regex1 regex2 ... regexn]
+
+AVAILABILITY
+       PowerShell (Windows)
+
+DESCRIPTION
+       Tracks your most used directories, based on 'frecency'.
+
+       After  a  short  learning  phase, z will take you to the most 'frecent'
+       directory that matches ALL of the regexes given on the command line, in
+       order.
+
+       For example, z foo bar would match C:\foo\bar but not C:\bar\foo.
+
+OPTIONS
+       -c     restrict matches to subdirectories of the current directory
+
+       -e     echo the best match, don't cd
+
+       -h     show a brief help message
+
+       -l     list only
+
+       -r     match by rank only
+
+       -t     match by recent access only
+
+       -x     remove the current directory from the datafile
+
+EXAMPLES
+       z foo         cd to most frecent dir matching foo
+
+       z foo bar     cd to most frecent dir matching foo, then bar
+
+       z -r foo      cd to highest ranked dir matching foo
+
+       z -t foo      cd to most recently accessed dir matching foo
+
+       z -l foo      list all dirs matching foo (by frecency)
+
+NOTES
+   Installation:
+       Put something like this in your PowerShell $PROFILE:
+
+              . C:\path\to\z.ps1
+
+       cd around for a while to build up the db.
+
+       Optionally:
+              Set $_Z_CMD to change the command name (default z).
+              Set $_Z_DATA to change the datafile (default $HOME\.z).
+              Set  $_Z_MAX_SCORE  lower  to  age  entries  out faster (default
+              9000).
+              Set $_Z_EXCLUDE_DIRS to an array of directory trees to  exclude.
+              (These  settings  should  go  in  your PowerShell profile before
+              the line added above.)
+
+              Example settings:
+              $env:_Z_CMD = "j"                    # use 'j' instead of 'z'
+              $env:_Z_DATA = "$env:USERPROFILE\.zdata"  # custom data file
+              $env:_Z_MAX_SCORE = "5000"            # age out faster
+              $env:_Z_EXCLUDE_DIRS = "C:\Windows;C:\Temp"  # exclude dirs
+
+   PowerShell Execution Policy:
+       If you get execution policy errors, you may need to set your execution
+       policy to allow scripts:
+
+              Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+       Or run with bypass:
+
+              powershell -ExecutionPolicy Bypass -File z.ps1
+
+   Aging:
+       The rank of directories maintained by z undergoes aging based on a sim-
+       ple formula. The rank of each entry is incremented  every  time  it  is
+       accessed.  When the sum of ranks is over 9000, all ranks are multiplied
+       by 0.99. Entries with a rank lower than 1 are forgotten.
+
+   Frecency:
+       Frecency is a portmanteau of 'recent' and 'frequency'. It is a weighted
+       rank  that depends on how often and how recently something occurred. As
+       far as I know, Mozilla came up with the term.
+
+       To z, a directory that has low ranking but has been  accessed  recently
+       will  quickly  have  higher rank than a directory accessed frequently a
+       long time ago.
+
+       Frecency is determined at runtime.
+
+   Common:
+       When multiple directories match all queries, and they all have a common
+       prefix, z will cd to the shortest matching directory, without regard to
+       priority.  This has been in effect, if  undocumented,  for  quite  some
+       time, but should probably be configurable or reconsidered.
+
+   Tab Completion:
+       z  supports tab completion in PowerShell. After any number of arguments,
+       press TAB to complete on directories that match each argument. The  
+       completion is handled by PowerShell's Register-ArgumentCompleter.
+
+ENVIRONMENT
+       A function Invoke-Z() is defined.
+
+       The contents of the variable $_Z_CMD is aliased to Invoke-Z. If not set,
+       $_Z_CMD defaults to z.
+
+       The  environment  variable $_Z_DATA can be used to control the datafile
+       location. If it is not defined, the location defaults to $HOME\.z.
+
+       The environment variable $_Z_EXCLUDE_DIRS can be set to a  semicolon-
+       separated list of directory trees to exclude from tracking. $HOME is  
+       always excluded. Directories must be full paths without trailing slashes.
+
+       Example: $env:_Z_EXCLUDE_DIRS = "C:\Windows;C:\Program Files;C:\Temp"
+
+       In PowerShell, z hooks into the prompt function to maintain its database.
+       The original prompt is preserved and called after updating z's data.
+
+FILES
+       Data is stored in $HOME\.z. This  can  be  overridden  by  setting  the
+       $_Z_DATA environment variable. When initialized, z will raise an error
+       if this path is a directory, and not function correctly.
+
+       Data format is: path|rank|time
+       Example: C:\foo\bar|5|1735089600
+
+SEE ALSO
+       Set-Location, Push-Location, Pop-Location, Get-Location
+
+       Original bash version: https://github.com/rupa/z/
+       This PowerShell port maintains compatibility with the original's
+       concepts and behavior.
+
+
+
+
+z.ps1                            August 2025                             Z(1)

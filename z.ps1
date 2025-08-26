@@ -1,3 +1,29 @@
+# Copyright (c) 2025. Licensed under the WTFPL license, Version 2
+# Based on rupa/z - https://github.com/rupa/z
+
+# maintains a jump-list of the directories you actually use
+#
+# INSTALL:
+#     * put something like this in your PowerShell profile:
+#         . C:\path\to\z.ps1
+#     * cd around for a while to build up the db
+#     * optionally:
+#         set $_Z_CMD to change the command (default z).
+#         set $_Z_DATA to change the datafile (default ~\.z).
+#         set $_Z_MAX_SCORE lower to age entries out faster (default 9000).
+#         set $_Z_EXCLUDE_DIRS to an array of directories to exclude.
+#
+# USE:
+#     * z foo     # cd to most frecent dir matching foo
+#     * z foo bar # cd to most frecent dir matching foo and bar
+#     * z -r foo  # cd to highest ranked dir matching foo
+#     * z -t foo  # cd to most recently accessed dir matching foo
+#     * z -l foo  # list matches instead of cd
+#     * z -e foo  # echo the best match, don't cd
+#     * z -c foo  # restrict matches to subdirs of current directory
+#     * z -x      # remove the current directory from the datafile
+#     * z -h      # show a brief help message
+
 # configuration variables
 $global:_Z_DATA = if ($env:_Z_DATA) { $env:_Z_DATA } else { "$env:USERPROFILE\.z" }
 $global:_Z_CMD = if ($env:_Z_CMD) { $env:_Z_CMD } else { "z" }
@@ -234,9 +260,7 @@ function Invoke-Z {
             }
         }
         
-        if ($common) {
-            Write-Host "common:    $common" -ForegroundColor Cyan
-        }
+        # Removed common prefix display - not needed
         
         # sort and display matches
         $sorted = if ($matches.Count -gt 0) { 

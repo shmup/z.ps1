@@ -46,6 +46,8 @@ EXAMPLES
 
        z -l foo      list all dirs matching foo (by frecency)
 
+       z -x          remove the current directory from the datafile
+
 NOTES
    Installation:
        Put something like this in your PowerShell $PROFILE:
@@ -106,6 +108,14 @@ NOTES
        z  supports tab completion in PowerShell. After any number of arguments,
        press TAB to complete on directories that match each argument. The  
        completion is handled by PowerShell's Register-ArgumentCompleter.
+
+   PowerShell Notes:
+       Matching is performed against the full stored path, using the query
+       terms as regex fragments in order. For compatibility with normal
+       PowerShell invocation, only known option bundles (-c, -e, -h, -l, -r,
+       -t, -x and combinations of them) are treated as flags. Other leading-
+       dash arguments are treated as query terms, so commands like z -name
+       work without requiring special quoting.
 
 ENVIRONMENT
        A function Invoke-Z() is defined.
